@@ -2,9 +2,11 @@ import gym
 import numpy as np
 import seaborn as sb
 
-heatmap = True
-
+heatmap = False
+useEpsilon = False
 max_steps = 100000
+
+
 gym.envs.register(
     id='MountainCarMyEasyVersion-v0',
     entry_point='gym.envs.classic_control:MountainCarEnv',
@@ -51,7 +53,7 @@ def update_Q_values(Q, executed_actions, reward):
         current_action = executed_actions[i][1]
         
         alpha = 1/(1+times_visited[current_state[0]][current_state[1]][current_action])
-        delta = alpha*(reward + 0.9*Q[last_state[0]][last_state[1]][last_action] - Q[current_state[0]][current_state[1]][current_action])
+        delta = alpha*(0 + 0.9*Q[last_state[0]][last_state[1]][last_action] - Q[current_state[0]][current_state[1]][current_action])
         Q[current_state[0]][current_state[1]][current_action] += delta
         times_visited[current_state[0]][current_state[1]][current_action] += 1        
     return Q
@@ -63,10 +65,11 @@ pos_space = np.around(np.arange(-1.2,0.61,0.1),2)
 Q = np.zeros((len(pos_space), len(vel_space), 3))
 times_visited=np.zeros((len(pos_space),len(vel_space),3))
 
-Q = initialise_Q_random(Q)
-epsilon = 0.9
+#Q = initialise_Q_random(Q)
+epsilon = 0.8
+episodes = 10
 #training
-for i in range(10):
+for i in range(episodes):
     executed_actions = []
     total_reward = 0
     observation = env.reset()
@@ -75,11 +78,13 @@ for i in range(10):
     while not done:
         discrete_obs = discretize_state(observation)
         # Determine next action - epsilon greedy strategy
-        #if np.random.random() < 1 - epsilon:
-        #    action = np.argmax(Q[state_adj[0], state_adj[1]]) 
-        #else:
-        #    action = np.random.randint(0, env.action_space.n)
-
+        if np.random.random() < 1 - epsilon and useEpsilon:
+            action = max_action(Q, discrete_obs)
+        else:
+            action = np.random.randint(0, env.action_space.n)
+        
+        epsilon += 1/((1-epsilon)*episodes)
+        
         # Determine next action - epsilon greedy strategy
         action = np.random.randint(0, env.action_space.n)
 
@@ -90,8 +95,6 @@ for i in range(10):
         if timesteps < max_steps:
             reward = 1
     Q = update_Q_values(Q, executed_actions, reward)    
-    if timesteps < 2000:
-        break
 
     print("Episode " + str(i) + " finished after " + str(timesteps) + " timesteps with reward: " + str(reward))
 
