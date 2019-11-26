@@ -140,7 +140,7 @@ total_steps = 0
 total_episodes = 0
 for j in range(0,100):
     epsilon = 0.2
-    
+
     Q = initialise_Q_random(Q)
     episode_counter = 0
     print("Run" + str(j))
