@@ -1,7 +1,6 @@
 import gym
 import numpy as np
 import seaborn as sb
-from time import sleep
 
 """ 
 I would have liked to replace the car with an Audi Q model but havent had the time
@@ -9,13 +8,13 @@ https://www.audi.nl/nl/web/nl/modellen/q8/q8.html
 """
 
 """ Toggle this if you want to have a heatmap. """
-heatmap = False
+heatmap = True
 
 """ Toggle this to switch between random exploration and epsilon greedy. """
-useEpsilon = False
+useEpsilon = True
 
 """ Toggle the repetitions of the experiment. Use 1 if you want to see the result immeadeately. Use 100 to replicate the experiment """
-repetitions = 100
+repetitions = 1
 
 #Maximum steps until we count it as a loss
 max_steps = 100000
@@ -200,7 +199,8 @@ for j in range(0,repetitions):
     total_episodes += episode_counter    
 print("Average timesteps until converged: " + str(total_steps/repetitions) + " and episode_counter on average: " + str(total_episodes/repetitions)+ " Goal reached in average steps: " + str(avg_seps/repetitions))
 
-#Draw a heatmap
+#Draw a heatmap 
+""" You might have to enable debug mode and debug in this as the heatmap is closed after closing the program """
 if heatmap:
     best_move=np.zeros((len(pos_space),len(vel_space)))
     for i in range(0,len(pos_space)):
@@ -211,8 +211,6 @@ if heatmap:
     ax = sb.heatmap(best_move,linewidths=.5,xticklabels=vel_space,yticklabels=pos_space,cbar_kws={'label': 'Best Move'})
     ax.set_xlabel('Velocity')
     ax.set_ylabel('Position')
-    while True:
-        sleep(5)
     
 #If we don't draw a heatmap we draw show 10 runs of the agent with the computed Q-matrix
 else: 
