@@ -8,7 +8,7 @@ https://www.audi.nl/nl/web/nl/modellen/q8/q8.html
 """
 
 """ Toggle this if you want to have a heatmap. """
-heatmap = True
+heatmap = False
 
 """ Toggle this to switch between random exploration and epsilon greedy. """
 useEpsilon = True
