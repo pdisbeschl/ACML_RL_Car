@@ -12,7 +12,10 @@ https://www.audi.nl/nl/web/nl/modellen/q8/q8.html
 heatmap = False
 
 """ Toggle this to switch between random exploration and epsilon greedy. """
-useEpsilon = True
+useEpsilon = False
+
+""" Toggle the repetitions of the experiment. Use 1 if you want to see the result immeadeately. Use 100 to replicate the experiment """
+repetitions = 100
 
 #Maximum steps until we count it as a loss
 max_steps = 100000
@@ -138,12 +141,13 @@ def converged():
 #training
 total_steps = 0
 total_episodes = 0
-for j in range(0,100):
+for j in range(0,repetitions):
     epsilon = 0.2
 
     Q = initialise_Q_random(Q)
     episode_counter = 0
     print("Run" + str(j))
+    tempsteps = 0
 
     #Repeat training until we converged
     while not converged():
@@ -156,7 +160,6 @@ for j in range(0,100):
         timesteps = 0
         #Update epsilon to slowly reduce exploration
         epsilon = epsilon * 1.1
-    
         while not done:
             #Discretize the observation
             discrete_obs = discretize_state(observation)
@@ -190,10 +193,12 @@ for j in range(0,100):
             
     
         print("Episode " + str(episode_counter) + " finished after " + str(timesteps) + " timesteps with reward: " + str(reward))
-        total_steps += timesteps/episode_counter
+        tempsteps += timesteps
+    total_steps += tempsteps/episode_counter
+    
     print("Episodes until converged: " + str(episode_counter))
     total_episodes += episode_counter    
-print("Average timesteps until converged: " + str(total_steps/100) + " and episode_counter on average: " + str(total_episodes/100)+ " Goal reached in average steps: " + str(avg_seps/100))
+print("Average timesteps until converged: " + str(total_steps/repetitions) + " and episode_counter on average: " + str(total_episodes/repetitions)+ " Goal reached in average steps: " + str(avg_seps/repetitions))
 
 #Draw a heatmap
 if heatmap:
